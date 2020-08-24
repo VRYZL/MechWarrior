@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{3F28133C-4A26-1023-031F-F68750F5AC19}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "MechWarrior",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}

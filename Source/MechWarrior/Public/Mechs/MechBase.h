@@ -6,6 +6,17 @@
 #include "GameFramework/Character.h"
 #include "MechBase.generated.h"
 
+UENUM(BlueprintType)
+enum EMechArmors {
+	HeadArmor, LeftArmArmor, LeftTorsoArmor, LeftTorsoRearArmor, CenterTorsoArmor, CenterTorsoRearArmor,
+	RightTorsoArmor, RightTorsoRearArmor, RightArmArmor, LeftLegArmor, RightLegArmor
+};
+
+UENUM(BlueprintType)
+enum EMechStructures {
+	Head, LeftArm, LeftTorso, CenterTorso, RightTorso, RightArm, LeftLeg, RightLeg, Engine
+};
+
 UCLASS()
 class MECHWARRIOR_API AMechBase : public ACharacter
 {
@@ -13,13 +24,13 @@ class MECHWARRIOR_API AMechBase : public ACharacter
 
 	//Components
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Heat, meta = (AllowPrivateAccess = "true"))
-	class UHeatComponent* Heat;
+	class UHeatComponent* HeatSystem;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Heat, meta = (AllowPrivateAccess = "true"))
-	class UHealthComponent* Health;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
+	class UHealthComponent* HealthSystem;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Heat, meta = (AllowPrivateAccess = "true"))
-	class UAmmoComponent* Ammo;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+	class UAmmoComponent* AmmoSystem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -75,5 +86,31 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "Mech Events")
 	void CooledDown();
 	void CooledDown_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Mech Events")
+	void OnMechPartDestroyed(EMechStructures DestoyedPart);
+	void OnMechPartDestroyed_Implementation(EMechStructures DestoyedPart);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Mech Events")
+	void OnMechArmorDestroyed(EMechArmors DestoyedArmor);
+	void OnMechArmorDestroyed_Implementation(EMechArmors DestoyedArmor);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Mech Events")
+	void OnMechDestroyed();
+	void OnMechDestroyed_Implementation();
+
+	//Telecast to all players about the destruction events
+	UFUNCTION(NetMulticast, Reliable, Category = "Mech Events")
+	void MechPartDestroyed(EMechStructures DestoyedPart);
+	void MechPartDestroyed_Implementation(EMechStructures DestoyedPart);
+
+	UFUNCTION(NetMulticast, Reliable, Category = "Mech Events")
+	void MechArmorDestroyed(EMechArmors DestoyedArmor);
+	void MechArmorDestroyed_Implementation(EMechArmors DestoyedArmor);
+
+	UFUNCTION(NetMulticast, Reliable, Category = "Mech Events")
+	void MechDestroyed();
+	void MechDestroyed_Implementation();
+
 
 };

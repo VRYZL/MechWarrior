@@ -102,16 +102,18 @@ void UHeatComponent::CalculateHeat(float DeltaSeconds) {
 	}
 
 	//Dissipate heat every frame
-	if (Temperature < 0.1) {
-		Temperature = 0;
+	if (Temperature < 1.01 * SinkTemperature) {
+		Temperature = SinkTemperature;
 	}
 	else {
-		if (IsCoolantOn && (CoolantAmount > CoolantConsumptionRate * DeltaSeconds)) {
-			Q = (k_mod_WC * A * (Temperature - SinkTemperature) / d) * (DeltaSeconds);
-			CoolantAmount -= CoolantConsumptionRate * DeltaSeconds;
-			//If s running low on coolant, turn off coolant flow
+		if (IsCoolantOn) {
+			//If is running low on coolant, turn off coolant flow
 			if (CoolantAmount < CoolantConsumptionRate * DeltaSeconds) {
 				IsCoolantOn = false;
+			}
+			else {
+				Q = (k_mod_WC * A * (Temperature - SinkTemperature) / d) * (DeltaSeconds);
+				CoolantAmount -= CoolantConsumptionRate * DeltaSeconds;
 			}
 		}
 		else {
@@ -156,7 +158,10 @@ void UHeatComponent::CalculateHeat(float DeltaSeconds) {
 
 
 void UHeatComponent::EnableCoolant_Implementation(bool enable) {
-	IsCoolantOn = enable;
+	if (enable && CoolantAmount > CoolantConsumptionRate) {
+		IsCoolantOn = true;
+	}
+	else IsCoolantOn = false;
 }
 
 

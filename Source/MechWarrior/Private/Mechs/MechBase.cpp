@@ -37,11 +37,11 @@ AMechBase::AMechBase()
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	//Add components
-	Heat = CreateDefaultSubobject<UHeatComponent>(TEXT("HeatComponent"));
+	HeatSystem = CreateDefaultSubobject<UHeatComponent>(TEXT("HeatSystem"));
 
-	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	HealthSystem = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthSystem"));
 
-	Ammo = CreateDefaultSubobject<UAmmoComponent>(TEXT("AmmoComponent"));
+	AmmoSystem = CreateDefaultSubobject<UAmmoComponent>(TEXT("AmmoSystem"));
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -147,3 +147,32 @@ void AMechBase::CooledDown_Implementation() {
 
 }
 
+
+void AMechBase::MechDestroyed_Implementation() {
+	OnMechDestroyed();
+}
+
+
+void AMechBase::MechPartDestroyed_Implementation(EMechStructures DestoyedPart) {
+	OnMechPartDestroyed(DestoyedPart);
+}
+
+
+void AMechBase::MechArmorDestroyed_Implementation(EMechArmors DestoyedArmor) {
+	OnMechArmorDestroyed(DestoyedArmor);
+}
+
+
+void AMechBase::OnMechDestroyed_Implementation() {
+
+}
+
+
+void AMechBase::OnMechPartDestroyed_Implementation(EMechStructures DestoyedPart) {
+
+}
+
+
+void AMechBase::OnMechArmorDestroyed_Implementation(EMechArmors DestoyedArmor) {
+
+}

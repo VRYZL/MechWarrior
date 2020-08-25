@@ -43,7 +43,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "HeatSettings")
 		float Temperature = 10;
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "HeatSettings")
-		float SinkTemperature;
+		float SinkTemperature=0;
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = "HeatSettings")
 		float MaxT;
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "HeatSettings")
@@ -67,6 +67,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 		float A = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
+		float d = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
+		float k = 50.2;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 		float k_c1 = 25;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 		float k_c2 = 1000;
@@ -79,8 +83,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 		float CoolantConsumptionRate = .5;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-		float k = 50.2;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 		float hsmUB = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 		float hsmLB = 0.7;
@@ -90,8 +92,6 @@ public:
 		float mmLB = 0.9;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 		float GlobalConductivity = 0.75;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-		float d = 1;
 
 	//Functions
 	void CalculateHeat(float DeltaSeconds);

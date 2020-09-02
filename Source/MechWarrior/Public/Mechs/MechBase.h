@@ -22,22 +22,6 @@ class MECHWARRIOR_API AMechBase : public ACharacter
 {
 	GENERATED_BODY()
 
-	//Components
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Heat, meta = (AllowPrivateAccess = "true"))
-	class UHeatComponent* HeatSystem;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
-	class UHealthComponent* HealthSystem;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
-	class UAmmoComponent* AmmoSystem;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* Camera;
-
 public:
 	// Sets default values for this character's properties
 	AMechBase();
@@ -53,6 +37,22 @@ public:
 	//Mech Characteristics
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MechCharacteristics", Meta = (ClampMin = 20, ClampMax = 100, UIMin = 20, UIMax = 100))
 	float Tonnage = 60;
+
+	//Components
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Heat, meta = (AllowPrivateAccess = "true"))
+		class UHeatComponent* HeatSystem;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
+		class UHealthComponent* HealthSystem;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+		class UAmmoComponent* AmmoSystem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* Camera;
 
 protected:
 	// Called when the game starts or when spawned
@@ -73,6 +73,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	//Set replicated props
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const override;
 
 	//Functions
 	UFUNCTION(BlueprintNativeEvent, Category = "Mech Events")
@@ -100,7 +103,7 @@ public:
 	void OnMechDestroyed_Implementation();
 
 	//Telecast to all players about the destruction events
-	UFUNCTION(NetMulticast, Reliable, Category = "Mech Events")
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Mech Events")
 	void MechPartDestroyed(EMechStructures DestoyedPart);
 	void MechPartDestroyed_Implementation(EMechStructures DestoyedPart);
 

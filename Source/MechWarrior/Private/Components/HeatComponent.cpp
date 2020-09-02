@@ -94,8 +94,7 @@ void UHeatComponent::CalculateHeat(float DeltaSeconds) {
 			HeatDataArray[i].timeRemaining -= DeltaSeconds;
 		}
 		else {
-			if (HeatDataArray[i].timeRemaining != 0)
-				Temperature += (HeatDataArray[i].HeatVal / HeatDataArray[i].duration) * HeatDataArray[i].timeRemaining;
+			Temperature += (HeatDataArray[i].HeatVal / HeatDataArray[i].duration) * HeatDataArray[i].timeRemaining;
 			HeatDataArray.RemoveAt(i);
 			i--;
 		}
@@ -170,8 +169,9 @@ void UHeatComponent::RefillCoolant_Implementation() {
 }
 
 
-void UHeatComponent::SetHeatSinks_Implementation(bool Single_HS_Type, int32 NumHeatSinks) {
-	if (Single_HS_Type) {
+void UHeatComponent::SetHeatSinks_Implementation(HeatSinkTypes HeatSinkType, int32 NumHeatSinks) {
+
+	if (HeatSinkType == SingleHeatSink) {
 		NumSHS = NumHeatSinks;
 		NumDHS = 0;
 	}

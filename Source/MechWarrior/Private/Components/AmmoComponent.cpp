@@ -2,6 +2,8 @@
 
 
 #include "Components/AmmoComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Ammunition/AmmoBase.h"
 
 // Sets default values for this component's properties
 UAmmoComponent::UAmmoComponent()
@@ -21,7 +23,14 @@ void UAmmoComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
+}
+
+
+void UAmmoComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UAmmoComponent, AmmoData);
 }
 
 
@@ -33,3 +42,23 @@ void UAmmoComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	// ...
 }
 
+
+void UAmmoComponent::AddAmmoBin_Implementation(FAmmoData Ammo) {
+	AmmoData.Add(Ammo);
+}
+
+
+void UAmmoComponent::RemoveAmmoBinAt_Implementation(uint8 index) {
+	AmmoData.RemoveAt(index);
+}
+
+
+uint8 UAmmoComponent::GetNextBinIndexOfType(TSubclassOf<AAmmoBase> AmmoType, uint8 CurrentIndex) {
+	for (uint8 i = CurrentIndex; i < AmmoData.Num(); i++) {
+		//if type matches and there are ammo left, return the bin
+		if (AmmoData[i].AmmoType == AmmoType && AmmoData[i].AmmoCount > 0) {
+			return i;
+		}
+	}
+	return -1;
+}

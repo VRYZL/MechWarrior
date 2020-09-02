@@ -36,7 +36,9 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	// Set health values to respective max values
+	ArmorHealths = ArmorMaxHealths;
+	StructureHealths = StructureMaxHealths;
 
 }
 
@@ -46,8 +48,91 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	// Call repairs if valid
+	if (IsBeingRepaired) {
+		//MakeRepairs(DeltaTime);
+		RepairAll(DeltaTime);
+	}
 }
+
+
+void UHealthComponent::RepairAll(float DeltaTime) {
+	//Repair is inturrupted, wait RepairInturruptDuration seconds
+	if (IsRepairInturrupted) {
+		RepairStandByTime += DeltaTime;
+		if (RepairStandByTime >= RepairInterruptDuration) {
+			IsRepairInturrupted = false;
+			RepairStandByTime = 0;
+		}
+	}
+	//Repairing is not inturrupted, complete repairs for this frame
+	else {
+		for (int i = 0; i < ArmorHealths.Num(); i++) {
+			if (ArmorHealths[i] + GlobalRepairRate * DeltaTime < ArmorMaxHealths[i]) {
+				ArmorHealths[i] += GlobalRepairRate * DeltaTime;
+			}
+			else if(ArmorHealths[i] != ArmorMaxHealths[i]){
+				ArmorHealths[i] = ArmorMaxHealths[i];
+			}
+		}
+		for (int i = 0; i < StructureHealths.Num(); i++) {
+			if (StructureHealths[i] + GlobalRepairRate * DeltaTime < StructureMaxHealths[i]) {
+				StructureHealths[i] += GlobalRepairRate * DeltaTime;
+			}
+			else if(StructureHealths[i] != StructureMaxHealths[i]){
+				StructureHealths[i] = StructureMaxHealths[i];
+			}
+		}
+	}
+}
+
+
+void UHealthComponent::RepairAllDamages_Implementation(float RepairRate) {
+	IsBeingRepaired = true;
+	GlobalRepairRate = RepairRate;
+}
+
+
+void UHealthComponent::StopRepairs_Implementation() {
+	IsBeingRepaired = false;
+}
+
+
+/*void UHealthComponent::MakeRepairs(float DeltaTime) {
+	//Repair is inturrupted, wait RepairInturruptDuration seconds
+	if (IsRepairInturrupted) {
+		RepairStandByTime += DeltaTime;
+		if (RepairStandByTime >= RepairInterruptDuration) {
+			IsRepairInturrupted = false;
+			RepairStandByTime = 0;
+		}
+	}
+	//Repairing is not inturrupted, complete repairs for this frame
+	else {
+		for (int i = 0; i < RepairData.Num(); i++) {
+			float FrameRepairValue = RepairData[i].RepairRate * DeltaTime;
+			if (RepairData[i].ValueRemaining > FrameRepairValue) {
+				*RepairData[i].Part += FrameRepairValue;
+				RepairData[i].ValueRemaining -= FrameRepairValue;
+				if (*RepairData[i].Part > RepairData[i].MaxValue) {
+					FMath::Clamp(*RepairData[i].Part, 0.0f, RepairData[i].MaxValue);
+					RepairData.RemoveAt(i);
+					i--;
+				}
+			}
+			else {
+				*RepairData[i].Part += RepairData[i].ValueRemaining;
+				FMath::Clamp(*RepairData[i].Part, 0.0f, RepairData[i].MaxValue);
+				RepairData.RemoveAt(i);
+				i--;
+			}
+		}
+		//If all repairs are complete, set IsBeingRepaired to false
+		if (RepairData.Num() == 0) {
+			IsBeingRepaired = false;
+		}
+	}
+}*/
 
 
 void UHealthComponent::DamageArmor_Implementation(float Damage, EMechArmors ArmorPiece) {
@@ -97,6 +182,10 @@ void UHealthComponent::DamageArmor_Implementation(float Damage, EMechArmors Armo
 	}
 	//Clamp the health value in range
 	FMath::Clamp(ArmorHealths[ArmorPiece], 0.0f, ArmorMaxHealths[ArmorPiece]);
+	//Inturrupt repairs if any
+	if (IsBeingRepaired) {
+		IsRepairInturrupted = true;
+	}
 }
 
 
@@ -235,6 +324,10 @@ void UHealthComponent::DamageStructure_Implementation(float Damage, EMechStructu
 	}
 	//Clamp the health value in range
 	FMath::Clamp(StructureHealths[StructurePart], 0.0f, StructureMaxHealths[StructurePart]);
+	//Inturrupt repairs if any
+	if (IsBeingRepaired) {
+		IsRepairInturrupted = true;
+	}
 }
 
 
@@ -248,22 +341,33 @@ float UHealthComponent::GetStructureHealth(EMechStructures StructurePart) {
 }
 
 
-void UHealthComponent::RepairAllDamages_Implementation() {
-	ArmorHealths = ArmorMaxHealths;
-	StructureHealths = StructureMaxHealths;
-}
+/*void UHealthComponent::RepairAllParts_Implementation(float RepairRate, float RepairValue) {
+	if (!IsBeingRepaired) {
+		for (int i = 0; i < 11; i++) {
+			StructRepairData temp = {RepairRate, &ArmorHealths[i], RepairValue, RepairValue, ArmorMaxHealths[i] };
+			RepairData.Add(temp);
+		}
+		for (int i = 0; i < 9; i++) {
+			StructRepairData temp = {RepairRate, &StructureHealths[i], RepairValue, RepairValue, StructureMaxHealths[i] };
+			RepairData.Add(temp);
+		}
+		IsBeingRepaired = true;
+	}
+}*/
 
 
-void UHealthComponent::RepairArmor_Implementation(float value, EMechArmors ArmorPiece) {
-	ArmorHealths[ArmorPiece] += value;
-	FMath::Clamp(ArmorHealths[ArmorPiece], 0.0f, ArmorMaxHealths[ArmorPiece]);
-}
+/*void UHealthComponent::RepairArmor_Implementation(float value, EMechArmors ArmorPiece, float RepairRate) {
+	StructRepairData temp = {RepairRate, &ArmorHealths[ArmorPiece], value, value, ArmorMaxHealths[ArmorPiece]};
+	RepairData.Add(temp);
+	IsBeingRepaired = true;
+}*/
 
 
-void UHealthComponent::RepairStructure_Implementation(float value, EMechStructures StructurePart) {
-	StructureHealths[StructurePart] += value;
-	FMath::Clamp(StructureHealths[StructurePart], 0.0f, StructureMaxHealths[StructurePart]);
-}
+/*void UHealthComponent::RepairStructure_Implementation(float value, EMechStructures StructurePart, float RepairRate) {
+	StructRepairData temp = {RepairRate, &StructureHealths[StructurePart], value, value, StructureMaxHealths[StructurePart]};
+	RepairData.Add(temp);
+	IsBeingRepaired = true;
+}*/
 
 
 void UHealthComponent::SetArmorMaxHealth_Implementation(float value, EMechArmors ArmorPiece) {

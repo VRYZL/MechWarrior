@@ -6,6 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "HeatComponent.generated.h"
 
+UENUM(BlueprintType)
+enum HeatSinkTypes {
+	SingleHeatSink, DoubleHeatSink
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MECHWARRIOR_API UHeatComponent : public UActorComponent
@@ -96,22 +100,22 @@ public:
 	//Functions
 	void CalculateHeat(float DeltaSeconds);
 	void CalculatePrimaryVariables();
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Heat")
 	void AddHeat(float DeltaHeat, float OverTime);
 	void AddHeat_Implementation(float DeltaHeat, float OverTime);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Heat")
 	void EnableCoolant(bool enable);
 	void EnableCoolant_Implementation(bool enable);
 
-	UFUNCTION(Server, UnReliable, BlueprintCallable)
+	UFUNCTION(Server, UnReliable, BlueprintCallable, Category = "Heat")
 	void RefillCoolant();
 	void RefillCoolant_Implementation();
 
-	UFUNCTION(Server, UnReliable, BlueprintCallable)
-	void SetHeatSinks(bool Single_HS_Type, int32 NumHeatSinks);
-	void SetHeatSinks_Implementation(bool Single_HS_Type, int32 NumHeatSinks);
-
+	UFUNCTION(Server, UnReliable, BlueprintCallable, Category = "Heat")
+	void SetHeatSinks(HeatSinkTypes HeatSinkType, int32 NumHeatSinks);
+	void SetHeatSinks_Implementation(HeatSinkTypes HeatSinkType, int32 NumHeatSinks);
 
 	//Overriding parent implementations
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const override;

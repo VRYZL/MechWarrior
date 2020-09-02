@@ -48,12 +48,21 @@ AMechBase::AMechBase()
 	CameraBoom->TargetArmLength = 300.0f;
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->CameraLagSpeed = 3.0f;
+	CameraBoom->CameraLagMaxDistance = 150.0f;
 	CameraBoom->bUsePawnControlRotation = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 }
+
+
+void AMechBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+
+}
+
 
 // Called when the game starts or when spawned
 void AMechBase::BeginPlay()
